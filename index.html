@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planilha de Escala de Domingo | Gestão de Horários para Supermercados e Atacarejos</title>
+<meta name="description" content="Planilha pronta no Google Sheets para montar a escala de domingo, controlar horários, folgas e horas dos colaboradores do seu supermercado ou atacarejo em minutos.">
+<style>
+  :root{
+    --verde:#1B7A43; --verde-esc:#0F5130; --verde-claro:#EAF3EC;
+    --laranja:#E8731C; --laranja-esc:#C95E10;
+    --cinza:#3A3A3A; --cinza-claro:#6B6B6B; --linha:#E2E8E4;
+    --branco:#ffffff; --fundo:#F7FAF8;
+    --sombra:0 10px 30px rgba(15,81,48,.08);
+    --raio:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--cinza);background:var(--branco);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{line-height:1.2;color:var(--verde-esc)}
+  .btn{display:inline-block;background:var(--laranja);color:#fff;font-weight:700;padding:16px 34px;border-radius:50px;font-size:1.05rem;transition:.2s;box-shadow:0 6px 18px rgba(232,115,28,.35);border:none;cursor:pointer}
+  .btn:hover{background:var(--laranja-esc);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--verde);border:2px solid var(--verde);box-shadow:none}
+  .btn-ghost:hover{background:var(--verde);color:#fff}
+  .tag{display:inline-block;background:var(--verde-claro);color:var(--verde);font-weight:700;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;padding:7px 16px;border-radius:50px}
+
+  /* NAV */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--verde-esc);font-size:1.15rem}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:var(--verde);display:grid;place-items:center;color:#fff;font-size:1.1rem}
+  .nav-links{display:flex;gap:28px;align-items:center;font-weight:600;color:var(--cinza-claro)}
+  .nav-links a:hover{color:var(--verde)}
+  .nav-cta{padding:10px 22px;font-size:.95rem}
+  @media(max-width:820px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{background:linear-gradient(160deg,var(--verde-claro) 0%,#fff 60%);padding:70px 0 60px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  .hero h1{font-size:2.85rem;margin:18px 0 16px}
+  .hero h1 span{color:var(--laranja)}
+  .hero p.lead{font-size:1.18rem;color:var(--cinza-claro);margin-bottom:28px;max-width:560px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-mini{margin-top:20px;font-size:.92rem;color:var(--cinza-claro);display:flex;gap:18px;flex-wrap:wrap}
+  .hero-mini span{display:flex;align-items:center;gap:7px}
+  .check{color:var(--verde);font-weight:800}
+  @media(max-width:820px){.hero-grid{grid-template-columns:1fr;gap:36px}.hero h1{font-size:2.1rem}}
+
+  /* MOCKUP PLANILHA */
+  .mock{background:#fff;border-radius:var(--raio);box-shadow:var(--sombra);border:1px solid var(--linha);overflow:hidden;transform:rotate(-1.2deg)}
+  .mock-bar{background:var(--verde-esc);color:#fff;padding:11px 16px;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .mock-bar .title{margin-left:8px}
+  table.sheet{width:100%;border-collapse:collapse;font-size:.78rem}
+  table.sheet th,table.sheet td{border:1px solid var(--linha);padding:8px 10px;text-align:center}
+  table.sheet thead th{background:var(--verde);color:#fff;font-weight:700}
+  table.sheet td.setor{text-align:left;font-weight:700;color:var(--verde-esc);background:var(--verde-claro)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-weight:700;font-size:.72rem}
+  .pill.on{background:#dff3e6;color:var(--verde)}
+  .pill.off{background:#fde8d6;color:var(--laranja-esc)}
+  .pill.folga{background:#eee;color:#888}
+
+  /* LOGOS / PROVA */
+  .strip{background:var(--verde-esc);color:#fff;padding:26px 0}
+  .strip-in{display:flex;justify-content:space-around;flex-wrap:wrap;gap:24px;text-align:center}
+  .strip .num{font-size:2rem;font-weight:800;color:#fff}
+  .strip .lbl{font-size:.9rem;color:#bfe0cd}
+
+  /* SECTIONS */
+  section{padding:72px 0}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 48px}
+  .sec-head h2{font-size:2.1rem;margin:14px 0 12px}
+  .sec-head p{color:var(--cinza-claro);font-size:1.08rem}
+  @media(max-width:820px){.sec-head h2{font-size:1.7rem}}
+
+  /* DORES */
+  .dores{background:var(--fundo)}
+  .dores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .dor{background:#fff;border:1px solid var(--linha);border-radius:var(--raio);padding:26px;box-shadow:var(--sombra)}
+  .dor .ic{font-size:1.7rem;margin-bottom:10px}
+  .dor h3{font-size:1.12rem;margin-bottom:6px;color:var(--cinza)}
+  .dor p{color:var(--cinza-claro);font-size:.96rem}
+  @media(max-width:820px){.dores-grid{grid-template-columns:1fr}}
+
+  /* BENEFICIOS */
+  .ben-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .ben{display:flex;gap:16px;background:#fff;border:1px solid var(--linha);border-radius:var(--raio);padding:24px;transition:.2s}
+  .ben:hover{box-shadow:var(--sombra);transform:translateY(-3px);border-color:var(--verde)}
+  .ben .ic{flex:none;width:52px;height:52px;border-radius:13px;background:var(--verde-claro);display:grid;place-items:center;font-size:1.5rem}
+  .ben h3{font-size:1.12rem;margin-bottom:4px;color:var(--verde-esc)}
+  .ben p{color:var(--cinza-claro);font-size:.96rem}
+  @media(max-width:820px){.ben-grid{grid-template-columns:1fr}}
+
+  /* COMO FUNCIONA */
+  .como{background:var(--verde-claro)}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;counter-reset:s}
+  .step{background:#fff;border-radius:var(--raio);padding:30px 26px;position:relative;box-shadow:var(--sombra)}
+  .step .n{width:44px;height:44px;border-radius:50%;background:var(--laranja);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.2rem;margin-bottom:14px}
+  .step h3{font-size:1.15rem;margin-bottom:6px}
+  .step p{color:var(--cinza-claro);font-size:.96rem}
+  @media(max-width:820px){.steps{grid-template-columns:1fr}}
+
+  /* PRECO */
+  .preco{background:var(--fundo)}
+  .card-preco{max-width:520px;margin:0 auto;background:#fff;border-radius:22px;box-shadow:var(--sombra);border:2px solid var(--verde);overflow:hidden;text-align:center}
+  .card-top{background:var(--verde);color:#fff;padding:18px;font-weight:700;letter-spacing:.4px}
+  .card-body{padding:38px 34px}
+  .preco-val{font-size:3.2rem;font-weight:800;color:var(--verde-esc);line-height:1}
+  .preco-val small{font-size:1.1rem;color:var(--cinza-claro);font-weight:600}
+  .preco-de{color:var(--cinza-claro);text-decoration:line-through;font-size:1.05rem;margin-bottom:4px}
+  .preco-list{text-align:left;margin:26px 0;display:grid;gap:12px}
+  .preco-list li{list-style:none;display:flex;gap:10px;align-items:flex-start;color:var(--cinza)}
+  .preco-list li .check{flex:none}
+  .selo{margin-top:18px;font-size:.88rem;color:var(--cinza-claro)}
+  .garantia{display:inline-flex;align-items:center;gap:10px;margin-top:26px;background:var(--verde-claro);color:var(--verde-esc);padding:12px 20px;border-radius:50px;font-weight:600;font-size:.92rem}
+
+  /* FAQ */
+  .faq-list{max-width:760px;margin:0 auto;display:grid;gap:14px}
+  .faq-item{border:1px solid var(--linha);border-radius:14px;overflow:hidden;background:#fff}
+  .faq-q{width:100%;text-align:left;background:none;border:none;padding:20px 24px;font-size:1.05rem;font-weight:700;color:var(--verde-esc);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .faq-q .arr{transition:.25s;color:var(--laranja);font-size:1.3rem;flex:none}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 24px;color:var(--cinza-claro)}
+  .faq-item.open .faq-a{max-height:300px;padding-bottom:20px}
+  .faq-item.open .arr{transform:rotate(45deg)}
+
+  /* CTA FINAL */
+  .cta-final{background:linear-gradient(160deg,var(--verde-esc),var(--verde));color:#fff;text-align:center}
+  .cta-final h2{color:#fff;font-size:2.2rem;margin-bottom:14px}
+  .cta-final p{color:#d9efe2;font-size:1.12rem;max-width:600px;margin:0 auto 30px}
+
+  /* FOOTER */
+  footer{background:#0c2a1c;color:#9fc4b1;padding:46px 0 30px;font-size:.94rem}
+  .foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:26px}
+  .foot-grid .logo{color:#fff}
+  .foot-grid a:hover{color:#fff}
+  .foot-col h4{color:#fff;margin-bottom:10px;font-size:1rem}
+  .foot-col p{margin-bottom:6px}
+  .foot-bottom{border-top:1px solid #1d4733;padding-top:18px;text-align:center;color:#6f9582;font-size:.85rem}
+
+  /* WHATSAPP FLOAT */
+  .wpp{position:fixed;right:22px;bottom:22px;z-index:60;background:#25D366;color:#fff;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;box-shadow:0 8px 22px rgba(37,211,102,.5);font-size:1.7rem;transition:.2s}
+  .wpp:hover{transform:scale(1.08)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <div class="logo"><span class="mark">📊</span> EscalaFácil</div>
+    <nav class="nav-links">
+      <a href="#beneficios">Benefícios</a>
+      <a href="#como">Como funciona</a>
+      <a href="#preco">Preço</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <a href="#preco" class="btn nav-cta">Quero a planilha</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="tag">Google Sheets · Supermercados e Atacarejos</span>
+      <h1>Monte a <span>escala de domingo</span> em minutos — sem erro e sem dor de cabeça</h1>
+      <p class="lead">Planilha pronta para gerenciar horários, folgas e escalas dos seus colaboradores por setor. É só preencher e usar — funciona no celular ou no computador.</p>
+      <div class="hero-cta">
+        <a href="#preco" class="btn">Quero minha planilha agora</a>
+        <a href="#como" class="btn btn-ghost">Ver como funciona</a>
+      </div>
+      <div class="hero-mini">
+        <span><span class="check">✓</span> Pagamento único</span>
+        <span><span class="check">✓</span> Entrega imediata</span>
+        <span><span class="check">✓</span> 100% editável</span>
+      </div>
+    </div>
+    <div>
+      <div class="mock">
+        <div class="mock-bar">
+          <span class="dot" style="background:#ff5f56"></span>
+          <span class="dot" style="background:#ffbd2e"></span>
+          <span class="dot" style="background:#27c93f"></span>
+          <span class="title">Escala_Domingo_Loja.xlsx</span>
+        </div>
+        <table class="sheet">
+          <thead>
+            <tr><th>Setor</th><th>Manhã</th><th>Tarde</th><th>Folga</th><th>Horas</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="setor">Caixa</td><td><span class="pill on">Ana</span></td><td><span class="pill on">Bruno</span></td><td><span class="pill folga">Carla</span></td><td>8h</td></tr>
+            <tr><td class="setor">Açougue</td><td><span class="pill on">Diego</span></td><td><span class="pill off">vago</span></td><td><span class="pill folga">Edu</span></td><td>6h</td></tr>
+            <tr><td class="setor">Padaria</td><td><span class="pill on">Fábio</span></td><td><span class="pill on">Gabi</span></td><td><span class="pill folga">Hugo</span></td><td>8h</td></tr>
+            <tr><td class="setor">Reposição</td><td><span class="pill on">Iris</span></td><td><span class="pill on">João</span></td><td><span class="pill folga">Kelly</span></td><td>8h</td></tr>
+            <tr><td class="setor">Frente</td><td><span class="pill on">Léo</span></td><td><span class="pill on">Maria</span></td><td><span class="pill folga">Nina</span></td><td>7h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROVA / NÚMEROS -->
+<div class="strip">
+  <div class="wrap strip-in">
+    <div><div class="num">5 min</div><div class="lbl">para montar a escala</div></div>
+    <div><div class="num">+10h</div><div class="lbl">economizadas por mês</div></div>
+    <div><div class="num">0</div><div class="lbl">furos de equipe no domingo</div></div>
+    <div><div class="num">100%</div><div class="lbl">no Google Sheets</div></div>
+  </div>
+</div>
+
+<!-- DORES -->
+<section class="dores">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">O problema</span>
+      <h2>Montar escala no papel custa caro</h2>
+      <p>Todo fim de semana a mesma correria — e qualquer erro vira furo de equipe, hora extra indevida ou colaborador insatisfeito.</p>
+    </div>
+    <div class="dores-grid">
+      <div class="dor"><div class="ic">😩</div><h3>Confusão de folgas</h3><p>Ninguém lembra quem folgou no último domingo e a escala fica injusta.</p></div>
+      <div class="dor"><div class="ic">⏰</div><h3>Horas fora de controle</h3><p>Cálculo manual de jornada gera erro, retrabalho e risco trabalhista.</p></div>
+      <div class="dor"><div class="ic">🕳️</div><h3>Furos na operação</h3><p>Setor sem gente no horário de pico significa fila no caixa e venda perdida.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section id="beneficios">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">O que você recebe</span>
+      <h2>Tudo o que precisa para organizar sua equipe</h2>
+      <p>Uma planilha completa, pensada para a rotina de supermercados e atacarejos.</p>
+    </div>
+    <div class="ben-grid">
+      <div class="ben"><div class="ic">📅</div><div><h3>Escala de domingo por setor</h3><p>Caixa, açougue, padaria, reposição e frente de loja organizados em uma tela.</p></div></div>
+      <div class="ben"><div class="ic">🔄</div><div><h3>Controle de folgas justo</h3><p>Revezamento automático para distribuir as folgas com equilíbrio entre todos.</p></div></div>
+      <div class="ben"><div class="ic">⏱️</div><div><h3>Cálculo de horas e banco de horas</h3><p>Horas trabalhadas somadas automaticamente, sem calculadora na mão.</p></div></div>
+      <div class="ben"><div class="ic">🚨</div><div><h3>Alertas de furo e excesso de jornada</h3><p>Sinais visuais quando falta gente em um turno ou alguém passa do limite.</p></div></div>
+      <div class="ben"><div class="ic">📊</div><div><h3>Painel resumo por turno</h3><p>Veja num piscar de olhos quantos colaboradores há em cada horário.</p></div></div>
+      <div class="ben"><div class="ic">📱</div><div><h3>Funciona em qualquer lugar</h3><p>100% no Google Sheets — abre no celular, tablet ou computador, sem instalar nada.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como" class="como">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Simples assim</span>
+      <h2>Como funciona</h2>
+      <p>Do pagamento ao primeiro uso em poucos minutos.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Garanta o acesso</h3><p>Faça o pagamento único e receba o link da planilha na hora, direto no seu e-mail.</p></div>
+      <div class="step"><div class="n">2</div><h3>Faça sua cópia</h3><p>Salve no seu Google Drive e cadastre os colaboradores e setores da sua loja.</p></div>
+      <div class="step"><div class="n">3</div><h3>Monte a escala</h3><p>Preencha os turnos e veja folgas, horas e alertas se ajustarem automaticamente.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECO -->
+<section id="preco" class="preco">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Oferta</span>
+      <h2>Pacote completo, pagamento único</h2>
+      <p>Sem mensalidade. Pague uma vez e use para sempre, com atualizações grátis.</p>
+    </div>
+    <div class="card-preco">
+      <div class="card-top">PLANILHA DE GESTÃO DE HORÁRIOS + ESCALA DE DOMINGO</div>
+      <div class="card-body">
+        <div class="preco-de">de R$ [VALOR CHEIO]</div>
+        <div class="preco-val"><small>R$</small> [VALOR]</div>
+        <div class="selo">Pagamento único · Acesso vitalício · Atualizações grátis</div>
+        <ul class="preco-list">
+          <li><span class="check">✓</span> Escala de domingo automática por setor</li>
+          <li><span class="check">✓</span> Controle de folgas e revezamento</li>
+          <li><span class="check">✓</span> Cálculo de horas e banco de horas</li>
+          <li><span class="check">✓</span> Alertas de furo e excesso de jornada</li>
+          <li><span class="check">✓</span> Painel resumo por turno</li>
+          <li><span class="check">✓</span> Manual de uso passo a passo</li>
+        </ul>
+        <a href="#" class="btn" style="width:100%">QUERO MINHA PLANILHA AGORA</a>
+        <div class="garantia">🛡️ Garantia de 7 dias ou seu dinheiro de volta</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Dúvidas frequentes</span>
+      <h2>Perguntas que talvez você tenha</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Preciso saber mexer em planilha? <span class="arr">+</span></button>
+        <div class="faq-a">Não. A planilha já vem pronta com tudo configurado. Você só preenche os nomes e os horários — o resto se ajusta sozinho. E ainda acompanha um manual passo a passo.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Funciona no celular? <span class="arr">+</span></button>
+        <div class="faq-a">Sim. Como é feita no Google Sheets, abre no app do Google Planilhas no celular, no tablet ou em qualquer computador com internet.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Como recebo a planilha? <span class="arr">+</span></button>
+        <div class="faq-a">Logo após a confirmação do pagamento, você recebe por e-mail o link para fazer sua própria cópia no Google Drive. Entrega imediata.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Serve para o meu tipo de loja? <span class="arr">+</span></button>
+        <div class="faq-a">A planilha foi pensada para supermercados e atacarejos, com setores como caixa, açougue, padaria, reposição e frente de loja — mas você pode adaptar os setores à realidade do seu negócio.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">É pagamento único mesmo? <span class="arr">+</span></button>
+        <div class="faq-a">Sim. Você paga uma única vez e tem acesso vitalício, incluindo as atualizações futuras, sem nenhuma mensalidade.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="wrap">
+    <h2>Pronto para acabar com a bagunça da escala de domingo?</h2>
+    <p>Organize os horários da sua equipe hoje mesmo e ganhe horas livres toda semana.</p>
+    <a href="#preco" class="btn" style="background:#fff;color:var(--laranja-esc)">Quero minha planilha agora</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <div class="logo"><span class="mark">📊</span> EscalaFácil</div>
+        <p style="margin-top:10px;max-width:280px">Planilhas inteligentes para a gestão de equipes em supermercados e atacarejos.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Contato</h4>
+        <p>📱 WhatsApp: (00) 00000-0000</p>
+        <p>✉️ E-mail: seuemail@exemplo.com</p>
+        <p>📷 Instagram: @seuperfil</p>
+      </div>
+      <div class="foot-col">
+        <h4>Links</h4>
+        <p><a href="#beneficios">Benefícios</a></p>
+        <p><a href="#como">Como funciona</a></p>
+        <p><a href="#preco">Preço</a></p>
+      </div>
+    </div>
+    <div class="foot-bottom">© 2026 EscalaFácil · Planilha de Gestão de Horários e Escala de Domingo. Todos os direitos reservados.</div>
+  </div>
+</footer>
+
+<a class="wpp" href="https://wa.me/5500000000000?text=Quero%20a%20planilha%20de%20escala%20de%20domingo" target="_blank" aria-label="Fale no WhatsApp">🟢</a>
+
+<script>
+  document.querySelectorAll('.faq-q').forEach(function(b){
+    b.addEventListener('click',function(){
+      var item=b.parentElement;
+      var open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});
+      if(!open)item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
